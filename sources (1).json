@@ -1,0 +1,115 @@
+[
+  {
+    "name": "Cviljobs - צפון",
+    "type": "cviljobs",
+    "url": "https://www.cviljobs.net/?field_activity_zones_target_id%5B16%5D=16",
+    "pages": 5
+  },
+  {
+    "name": "FoodImpactCareers - ישראל",
+    "type": "foodimpact",
+    "url": "https://www.foodimpactcareers.com/jobs?q=&category=&location=Israel&location_id=168935"
+  },
+  {
+    "name": "תעשייה",
+    "type": "taasiya",
+    "pages": 2,
+    "urls": [
+      "https://www.taasiya.co.il/jobs/?start=0&my_jobs=0&limit=20&query=",
+      "https://www.taasiya.co.il/jobs/?start=0&my_jobs=0&limit=20&category=171",
+      "https://www.taasiya.co.il/jobs/?start=0&my_jobs=0&limit=20&digital=1&category=981"
+    ]
+  },
+  {
+    "name": "AllJobs - סושיאל, חיפה",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=1"
+  },
+  {
+    "name": "AllJobs - סושיאל, צפון",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=10"
+  },
+  {
+    "name": "AllJobs - סושיאל, מהבית",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=11"
+  },
+  {
+    "name": "AllJobs - סושיאל, היברידי",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=37&city=&region="
+  },
+  {
+    "name": "AllJobs - תוכן, חיפה",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=1"
+  },
+  {
+    "name": "AllJobs - תוכן, צפון",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=10"
+  },
+  {
+    "name": "AllJobs - תוכן, מהבית",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=11"
+  },
+  {
+    "name": "AllJobs - אינטרנט ודיגיטל, חיפה",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=320&type=&city=&region=1"
+  },
+  {
+    "name": "AllJobs - אינטרנט ודיגיטל, צפון",
+    "type": "alljobs",
+    "pages": 2,
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=320&type=&city=&region=10"
+  },
+  {
+    "name": "חיפוש חופשי ברשת (Google, לינקדאין, דפי קריירה)",
+    "type": "web_discovery",
+    "queries": [
+      "יוצר/ת תוכן, מנהל/ת סושיאל או מפיק/ת תוכן בצוות, בחיפה, הקריות, עכו, נהריה, כרמיאל והגליל המערבי",
+      "משרות וידאו, הפקת תוכן וקריאייטיב בסטודיו או חברת תוכן קטנה בצפון ישראל או היברידי",
+      "משרות תקשורת ותוכן בעמותות, ארגונים חברתיים וארגוני קיימות וסביבה בצפון ישראל או מרחוק",
+      "Google Jobs and LinkedIn: social media, content creator, video producer, creative team jobs in Haifa or Northern Israel, hybrid or remote Israel"
+    ]
+  },
+  {
+    "name": "דרושים (Drushim) - סושיאל, חיפה והצפון",
+    "type": "generic",
+    "max_links": 60,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%A9%D7%99%D7%90%D7%9C/"
+  },
+  {
+    "name": "Nortech (חוסם גישה אוטומטית - כבוי)",
+    "type": "generic",
+    "url": "https://nortech-platform.com/explore/?type=job&job-vertical=BioTech&sort=latest",
+    "max_links": 60,
+    "enabled": false
+  },
+  {
+    "name": "AltProtein Jobs (ניסיוני)",
+    "type": "generic",
+    "url": "https://altprotein.jobs/",
+    "max_links": 60
+  },
+  {
+    "name": "דוגמה: דף קריירה של חברה/עמותה (להחליף בכתובת אמיתית)",
+    "type": "generic",
+    "url": "https://example.com/careers",
+    "enabled": false
+  }
+]
