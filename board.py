@@ -28,16 +28,19 @@ import report_site
 
 ROOT = Path(__file__).parent
 SEEN_FILE = ROOT / "state.json"
-PROFILE = os.getenv("PROFILE_MD") or (ROOT / "profile.md").read_text(encoding="utf-8")
+_pf = ROOT / "profile.md"
+PROFILE = os.getenv("PROFILE_MD") or (_pf.read_text(encoding="utf-8") if _pf.exists() else "")
+if not PROFILE.strip():
+    sys.exit("חסר פרופיל: יש להגדיר את הסוד PROFILE_MD")
 SOURCES = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
 
-GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "")   # אם ריק, נבחר אוטומטית מרשימת המודלים הזמינה למפתח
 RATE_SLEEP = float(os.getenv("RATE_SLEEP", "13"))  # השהיה בין בקשות כדי לכבד מגבלות של השכבה החינמית
 _calls = {"n": 0}
-REPORT_PASSWORD = os.getenv("REPORT_PASSWORD", "")  # אם מוגדר: מפרסמים דף מוצפן ב-docs/
-GMAIL_USER = os.getenv("GMAIL_USER", "")
-GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+REPORT_PASSWORD = os.getenv("REPORT_PASSWORD", "").strip()  # אם מוגדר: מפרסמים דף מוצפן ב-docs/
+GMAIL_USER = os.getenv("GMAIL_USER", "").strip()
+GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "").replace(" ", "").strip()
 TO_EMAIL = os.getenv("TO_EMAIL") or GMAIL_USER
 
 MAX_AGE_DAYS = 30        # משרות ותיקות מזה לא ייכנסו
@@ -47,6 +50,15 @@ MAX_DETAIL = 40          # כמה משרות לקרוא לעומק
 MAX_IN_REPORT = 25       # תקרה לדוח
 MIN_SCORE = 5            # ציון התאמה מינימלי להופעה בדוח
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; DailyBoard/1.0; personal use)"}
+
+
+def clean(msg):
+    """מסתיר סודות מהודעות שגיאה."""
+    msg = str(msg)
+    for secret in (GEMINI_KEY, REPORT_PASSWORD, GMAIL_APP_PASSWORD):
+        if secret:
+            msg = msg.replace(secret, "***")
+    return msg
 
 
 # ---------------------------------------------------------------- HTTP
@@ -585,7 +597,7 @@ def main():
             health.append((src["name"], len(found), diag(src) if not found else None))
             candidates += found
         except Exception as e:  # noqa: BLE001
-            health.append((src["name"], 0, f"נכשל: {str(e)[:100]}"))
+            health.append((src["name"], 0, f"נכשל: {clean(e)[:100]}"))
     print(f"נאספו {len(candidates)} משרות מ-{len(health)} מקורות")
 
     uniq = {}
@@ -634,7 +646,7 @@ def main():
             if j["url"] not in skip:
                 seen[h(j["url"])] = today.isoformat()
     except Exception as e:  # noqa: BLE001
-        notes.append(f"שגיאה בשלב הסינון החכם: {e}. המשרות לא סומנו כנבדקו ויסרקו שוב.")
+        notes.append(f"שגיאה בשלב הסינון החכם: {clean(e)}. המשרות לא סומנו כנבדקו ויסרקו שוב.")
 
     if GEMINI_MODEL:
         notes.append(f"מודל Gemini בשימוש: {GEMINI_MODEL}")
