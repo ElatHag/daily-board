@@ -21,58 +21,67 @@
     ]
   },
   {
-    "name": "AllJobs - סושיאל, חיפה",
+    "name": "AllJobs - סושיאל, חיפה (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=1"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=1",
+    "enabled": false
   },
   {
-    "name": "AllJobs - סושיאל, צפון",
+    "name": "AllJobs - סושיאל, צפון (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=10"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=10",
+    "enabled": false
   },
   {
-    "name": "AllJobs - סושיאל, מהבית",
+    "name": "AllJobs - סושיאל, מהבית (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=11"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=&city=&region=11",
+    "enabled": false
   },
   {
-    "name": "AllJobs - סושיאל, היברידי",
+    "name": "AllJobs - סושיאל, היברידי (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=37&city=&region="
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=1567&type=37&city=&region=",
+    "enabled": false
   },
   {
-    "name": "AllJobs - תוכן, חיפה",
+    "name": "AllJobs - תוכן, חיפה (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=1"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=1",
+    "enabled": false
   },
   {
-    "name": "AllJobs - תוכן, צפון",
+    "name": "AllJobs - תוכן, צפון (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=10"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=10",
+    "enabled": false
   },
   {
-    "name": "AllJobs - תוכן, מהבית",
+    "name": "AllJobs - תוכן, מהבית (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=11"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=323&type=&city=&region=11",
+    "enabled": false
   },
   {
-    "name": "AllJobs - אינטרנט ודיגיטל, חיפה",
+    "name": "AllJobs - אינטרנט ודיגיטל, חיפה (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=320&type=&city=&region=1"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=320&type=&city=&region=1",
+    "enabled": false
   },
   {
-    "name": "AllJobs - אינטרנט ודיגיטל, צפון",
+    "name": "AllJobs - אינטרנט ודיגיטל, צפון (כבוי: האתר חוסם גישה אוטומטית)",
     "type": "alljobs",
     "pages": 2,
-    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=320&type=&city=&region=10"
+    "url": "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=1&position=320&type=&city=&region=10",
+    "enabled": false
   },
   {
     "name": "חיפוש חופשי ברשת (Google, לינקדאין, דפי קריירה)",
@@ -101,10 +110,11 @@
     "enabled": false
   },
   {
-    "name": "AltProtein Jobs (ניסיוני)",
+    "name": "AltProtein Jobs (כבוי: נטען בדפדפן בלבד)",
     "type": "generic",
     "url": "https://altprotein.jobs/",
-    "max_links": 60
+    "max_links": 60,
+    "enabled": false
   },
   {
     "name": "דוגמה: דף קריירה של חברה/עמותה (להחליף בכתובת אמיתית)",
