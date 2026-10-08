@@ -1,9 +1,10 @@
 [
   {
-    "name": "Cviljobs - צפון",
+    "name": "Cviljobs - צפון (כבוי: בעיקר משרות טיפוליות וסוציאליות)",
     "type": "cviljobs",
     "url": "https://www.cviljobs.net/?field_activity_zones_target_id%5B16%5D=16",
-    "pages": 5
+    "pages": 5,
+    "enabled": false
   },
   {
     "name": "FoodImpactCareers - ישראל",
