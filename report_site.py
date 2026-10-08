@@ -106,11 +106,20 @@ def _card(j, r):
 <span class="src">{E(j['source'])}</span></article>"""
 
 
-def fragment(rows, health, notes):
+def fragment(rows, health, notes, stats=None, rejected=None):
     """גוף הדוח (בלי מעטפת)."""
     groups = [("clear", "התאמה ברורה"), ("partial", "שווה בדיקה"), ("remote", "מרחוק לגמרי")]
     counts = {c: sum(1 for _, r in rows if r["category"] == c) for c, _ in groups}
     pills = "".join(f'<span class="pill">{t}: {counts[c]}</span>' for c, t in groups)
+    stats_html = ("<div class='summary'>" + "".join(
+        f'<span class="pill">{E(str(k))}: {v}</span>' for k, v in stats) + "</div>") if stats else ""
+    rej_html = ""
+    if rejected:
+        items = "".join(
+            f"<li>{E(x['title'])} <small>({E(x['source'])}"
+            f"{', ' + str(x['score']) + '/10' if x.get('score') is not None else ''}) &mdash; {E(x['reason'])}</small></li>"
+            for x in rejected)
+        rej_html = f"<details><summary>משרות שנפסלו ({len(rejected)})</summary><ul>{items}</ul></details>"
     body = []
     for cat, title in groups:
         group = [(j, r) for j, r in rows if r["category"] == cat]
@@ -124,8 +133,8 @@ def fragment(rows, health, notes):
                   f"{E(err) if err else str(c) + ' משרות נאספו'}</li>" for n, c, err in health)
     date = datetime.now().strftime("%d.%m.%Y")
     return f"""<div class="wrap"><header><h1>דוח משרות</h1><div class="sub">{date}</div>
-<div class="summary">{pills}</div></header>{notes_html}{''.join(body)}
-<details><summary>מצב המקורות</summary><ul>{src}</ul></details></div>"""
+<div class="summary">{pills}</div>{stats_html}</header>{notes_html}{''.join(body)}
+{rej_html}<details><summary>מצב המקורות</summary><ul>{src}</ul></details></div>"""
 
 
 def _shell(inner, extra_head="", extra_tail=""):
@@ -158,8 +167,8 @@ def encrypted_page(frag, password):
     return _shell(lock, extra_tail=tail)
 
 
-def write_site(rows, health, notes, outdir, password=None):
+def write_site(rows, health, notes, outdir, password=None, stats=None, rejected=None):
     outdir.mkdir(exist_ok=True)
-    frag = fragment(rows, health, notes)
+    frag = fragment(rows, health, notes, stats, rejected)
     page = encrypted_page(frag, password) if password else plain_page(frag)
     (outdir / "index.html").write_text(page, encoding="utf-8")
