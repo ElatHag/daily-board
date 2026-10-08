@@ -84,14 +84,15 @@
     "enabled": false
   },
   {
-    "name": "חיפוש חופשי ברשת (Google, לינקדאין, דפי קריירה)",
+    "name": "חיפוש חופשי ברשת (כבוי: דורש מנוי בתשלום ב-Gemini)",
     "type": "web_discovery",
     "queries": [
       "יוצר/ת תוכן, מנהל/ת סושיאל או מפיק/ת תוכן בצוות, בחיפה, הקריות, עכו, נהריה, כרמיאל והגליל המערבי",
       "משרות וידאו, הפקת תוכן וקריאייטיב בסטודיו או חברת תוכן קטנה בצפון ישראל או היברידי",
       "משרות תקשורת ותוכן בעמותות, ארגונים חברתיים וארגוני קיימות וסביבה בצפון ישראל או מרחוק",
       "Google Jobs and LinkedIn: social media, content creator, video producer, creative team jobs in Haifa or Northern Israel, hybrid or remote Israel"
-    ]
+    ],
+    "enabled": false
   },
   {
     "name": "דרושים (Drushim) - סושיאל, חיפה והצפון",
