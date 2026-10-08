@@ -621,7 +621,15 @@ def main():
         if j["posted"] and (today - j["posted"]).days > MAX_AGE_DAYS:
             continue
         uniq.setdefault(j["url"], j)
-    new = [j for u, j in uniq.items() if h(u) not in seen][:MAX_TRIAGE]
+    by_src = {}
+    for u, j in uniq.items():
+        if h(u) not in seen:
+            by_src.setdefault(j["source"], []).append(j)
+    new, lists = [], list(by_src.values())      # חלוקה הוגנת בין המקורות, כדי שמקור גדול לא יחסום את האחרים
+    while len(new) < MAX_TRIAGE and any(lists):
+        for lst in lists:
+            if lst and len(new) < MAX_TRIAGE:
+                new.append(lst.pop(0))
     print(f"{len(new)} משרות חדשות לבדיקה")
 
     rows, notes, rejected = [], [], []
