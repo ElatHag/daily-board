@@ -427,19 +427,34 @@ def gemini_json(prompt):
     return json.loads(text)
 
 
+def _toint(x):
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return None
+
+
 def triage(batch):
+    """מחזיר (מזהים להשאיר, סיבות לפסילה)."""
     items = [{"id": i, "title": j["title"], "company": j["company"],
               "location": j["location"], "info": j["snippet"][:150]}
              for i, j in enumerate(batch)]
     prompt = f"""{PROFILE}
 
-להלן כותרות משרות. סנן החוצה רק משרות שברור שאינן מתאימות
-(תחום שונה לגמרי, מגבלות שעות/מיקום, תפקידים שנפסלו בפרופיל, קישורים שאינם משרות).
-היה נדיב: אם יש ספק, השאר. החזר JSON בלבד: {{"keep": [מזהים]}}
+להלן משרות. החלט לגבי כל אחת אם יש סיכוי סביר שהיא מתאימה, והשאר כל משרה שיש לגביה ספק.
+פסול רק משרות שברור שאינן מתאימות (תחום או תפקיד שונה לגמרי, תפקיד שנפסל בפרופיל, או קישור שאינו משרה).
+החזר JSON בלבד: {{"keep": [מזהים], "drop": [{{"id": מזהה, "reason": "סיבה קצרה מאוד"}}]}}
 
 {json.dumps(items, ensure_ascii=False)}"""
     out = gemini_json(prompt)
-    return {k for k in out.get("keep", []) if isinstance(k, int)}
+    if isinstance(out, list):
+        out = {"keep": out}
+    keep = {k for k in (_toint(x) for x in out.get("keep", [])) if k is not None}
+    reasons = {}
+    for d in out.get("drop", []) or []:
+        if isinstance(d, dict) and _toint(d.get("id")) is not None:
+            reasons[_toint(d["id"])] = str(d.get("reason", ""))[:80]
+    return keep, reasons
 
 
 def score(batch):
@@ -459,7 +474,8 @@ def score(batch):
  "cv_tip": "הערה קצרה להתאמת קורות החיים למשרה הזו",
  "distance_minutes": הערכת זמן נסיעה מבוסתן הגליל במספר או null,
  "work_mode": "פיזי/היברידי/מרחוק/לא ידוע",
- "salary": "אם צוין, אחרת ריק"
+ "salary": "אם צוין, אחרת ריק",
+ "reason": "אם exclude או ציון נמוך: סיבה קצרה מאוד"
 }}]}}
 
 {json.dumps(items, ensure_ascii=False)}"""
@@ -608,25 +624,32 @@ def main():
     new = [j for u, j in uniq.items() if h(u) not in seen][:MAX_TRIAGE]
     print(f"{len(new)} משרות חדשות לבדיקה")
 
-    rows, notes = [], []
+    rows, notes, rejected = [], [], []
+    keep_all, triaged, scored = [], [], set()
     try:
         if new:
             pick_model()
-        keep_all, triaged = [], []
         for i in range(0, len(new), 40):
             if out_of_time():
                 notes.append("הזמן המוקצה להרצה נגמר באמצע הסינון. השאר ימשיך מחר.")
                 break
             batch = new[i:i + 40]
-            ids = triage(batch)
-            keep_all += [b for k, b in enumerate(batch) if k in ids]
+            ids, reasons = triage(batch)
+            if not ids and not reasons:
+                notes.append("הסינון הראשוני לא החזיר תשובה תקינה, ולכן כל המשרות הועברו לדירוג.")
+                ids = set(range(len(batch)))
+            for k, b in enumerate(batch):
+                if k in ids:
+                    keep_all.append(b)
+                else:
+                    rejected.append({"title": b["title"], "source": b["source"], "score": None,
+                                     "reason": reasons.get(k) or "נפסלה בסינון הראשוני"})
             triaged += batch
             print(f"סינון ראשוני: {len(triaged)}/{len(new)}")
         keep = keep_all[:MAX_DETAIL]
         overflow = {j["url"] for j in keep_all[MAX_DETAIL:]}   # מבטיחות שלא הספקנו, ייבדקו מחר
         for j in keep:
             j["detail"] = fetch_detail(j)
-        scored = set()
         for i in range(0, len(keep), 6):
             if out_of_time():
                 notes.append("הזמן המוקצה להרצה נגמר באמצע הדירוג. השאר ימשיך מחר.")
@@ -638,6 +661,11 @@ def main():
                 r = res.get(k)
                 if r and r.get("category") != "exclude" and r.get("score", 0) >= MIN_SCORE:
                     rows.append((j, r))
+                else:
+                    rejected.append({"title": j["title"], "source": j["source"],
+                                     "score": (r or {}).get("score"),
+                                     "reason": (r or {}).get("reason") or (r or {}).get("missing")
+                                     or (r or {}).get("why") or "לא הוחזר דירוג"})
             print(f"דירוג: {len(scored)}/{len(keep)}")
         if overflow:
             notes.append(f"{len(overflow)} משרות מבטיחות נוספות ידורגו בדוח של מחר.")
@@ -656,8 +684,10 @@ def main():
         return (r["category"] == "remote", -r.get("score", 0), r.get("distance_minutes") or 999)
     rows = sorted(rows, key=key)[:MAX_IN_REPORT]
 
+    stats = [("נאספו", len(candidates)), ("חדשות", len(new)), ("עברו סינון ראשוני", len(keep_all)),
+             ("דורגו", len(scored)), ("בדוח", len(rows))]
     if REPORT_PASSWORD:      # מצב אתר: דף מוצפן בלבד, בלי קבצי Markdown גלויים
-        report_site.write_site(rows, health, notes, ROOT / "docs", REPORT_PASSWORD)
+        report_site.write_site(rows, health, notes, ROOT / "docs", REPORT_PASSWORD, stats, rejected[:80])
     else:
         save_report(build_report_md(rows, health, notes))
     if GMAIL_USER and GMAIL_APP_PASSWORD:   # מייל הוא אופציונלי
