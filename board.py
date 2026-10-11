@@ -48,7 +48,7 @@ MAX_TRIAGE = 120         # כמה משרות חדשות לבדוק בסינון 
 MAX_RUNTIME_MIN = float(os.getenv("MAX_RUNTIME_MIN", "25"))  # תקרת זמן להרצה
 MAX_DETAIL = 40          # כמה משרות לקרוא לעומק
 MAX_IN_REPORT = 25       # תקרה לדוח
-MIN_SCORE = 5            # ציון התאמה מינימלי להופעה בדוח
+MIN_SCORE = 4            # ציון התאמה מינימלי להופעה בדוח
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; DailyBoard/1.0; personal use)"}
 
 
@@ -707,7 +707,7 @@ def main():
                 if k in ids:
                     keep_all.append(b)
                 else:
-                    rejected.append({"title": b["title"], "source": b["source"], "score": None,
+                    rejected.append({"title": b["title"], "url": b["url"], "source": b["source"], "score": None,
                                      "reason": reasons.get(k) or "נפסלה בסינון הראשוני"})
             triaged += batch
             print(f"סינון ראשוני: {len(triaged)}/{len(new)}")
@@ -731,7 +731,7 @@ def main():
                 if r and r.get("category") != "exclude" and r.get("score", 0) >= MIN_SCORE:
                     rows.append((j, r))
                 else:
-                    rejected.append({"title": j["title"], "source": j["source"],
+                    rejected.append({"title": j["title"], "url": j["url"], "source": j["source"],
                                      "score": (r or {}).get("score"),
                                      "reason": (r or {}).get("reason") or (r or {}).get("missing")
                                      or (r or {}).get("why") or "לא הוחזר דירוג"})
