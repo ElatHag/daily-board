@@ -36,7 +36,7 @@ jobs:
         run: |
           git config user.name "daily-board"
           git config user.email "daily-board@users.noreply.github.com"
-          git add state.json
+          git add state.json matches.enc
           git diff --cached --quiet || (git commit -m "update state" && git push)
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
