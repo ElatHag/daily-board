@@ -43,6 +43,7 @@ GMAIL_USER = os.getenv("GMAIL_USER", "").strip()
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "").replace(" ", "").strip()
 TO_EMAIL = os.getenv("TO_EMAIL") or GMAIL_USER
 
+MATCHES_DAYS = 14        # כמה ימים משרה שנמצאה ממשיכה להופיע בדוח
 MAX_AGE_DAYS = 30        # משרות ותיקות מזה לא ייכנסו
 MAX_TRIAGE = 120         # כמה משרות חדשות לבדוק בסינון הראשוני בכל ריצה (השאר ימשיכו מחר)
 MAX_RUNTIME_MIN = float(os.getenv("MAX_RUNTIME_MIN", "25"))  # תקרת זמן להרצה
@@ -563,6 +564,24 @@ def load_seen():
         return {}
 
 
+def _matches_path():
+    return ROOT / ("matches.enc" if REPORT_PASSWORD else "matches.json")
+
+
+def load_matches():
+    try:
+        raw = json.loads(_matches_path().read_text(encoding="utf-8"))
+        data = report_site.decrypt_blob(raw, REPORT_PASSWORD) if REPORT_PASSWORD else raw
+        return data if isinstance(data, list) else []
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def save_matches(items):
+    data = report_site.encrypt_blob(items, REPORT_PASSWORD) if REPORT_PASSWORD else items
+    _matches_path().write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
 def save_seen(seen):
     cutoff = (datetime.now(timezone.utc) - timedelta(days=60)).date().isoformat()
     seen = {k: v for k, v in seen.items() if v >= cutoff}
@@ -765,6 +784,21 @@ def main():
 
     if GEMINI_MODEL:
         notes.append(f"מודל Gemini בשימוש: {GEMINI_MODEL}")
+
+    # התאמות מהימים האחרונים ממשיכות להופיע, כדי שלא יאבדו אם לא נכנסת לדוח באותו יום
+    today_s = today.isoformat()
+    cutoff = (today - timedelta(days=MATCHES_DAYS)).isoformat()
+    kept = {m["job"]["url"]: m for m in load_matches() if m.get("first_seen", "") >= cutoff}
+    for j, r in rows:
+        jj = {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in j.items() if k != "detail"}
+        kept[j["url"]] = {"job": jj, "r": r, "first_seen": today_s}
+    save_matches(list(kept.values()))
+    rows = []
+    for m in kept.values():
+        j = dict(m["job"])
+        j["new"] = m["first_seen"] == today_s
+        j["first_seen"] = m["first_seen"]
+        rows.append((j, m["r"]))
 
     def key(row):
         j, r = row
