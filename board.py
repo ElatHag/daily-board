@@ -198,8 +198,22 @@ def _card_text(a, same_pat):
     return best
 
 
+def _generic_date(text, today):
+    m = re.search(r"(\d{1,2})/(\d{1,2})/(\d{4})", text)
+    if m:
+        try:
+            return datetime(int(m[3]), int(m[2]), int(m[1])).date()
+        except ValueError:
+            return None
+    m = re.search(r"לפני\s*(\d+)\s*(דקות|שעות|שעה|ימים|יום)", text)
+    if m:
+        return today - timedelta(days=int(m[1]) if m[2] in ("ימים", "יום") else 0)
+    return None
+
+
 def parse_generic(src):
     """דף קריירה/לוח משרות כללי: אוסף קישורים והמודל מחליט מה משרה."""
+    today = datetime.now(timezone.utc).date()
     soup = soup_of(src["url"])
     must = src.get("link_must_contain", [])
     rx = src.get("link_regex")
@@ -216,13 +230,15 @@ def parse_generic(src):
         if text.lower() in GENERIC_LABELS:
             snippet = _card_text(a, same_pat)
             text = snippet[:120] if snippet else text
+        text = re.sub(r"^שיתוף\s+", "", text)           # כפתור "שיתוף" שנדבק לכותרות בדרושים
+        snippet = re.sub(r"^שיתוף\s+", "", snippet)
         if not (6 <= len(text) <= 160):
             continue
         if href in seen_urls or href.rstrip("/") == src["url"].rstrip("/"):
             continue
         seen_urls.add(href)
         jobs.append(new_job(src["name"], text, href, company=urlparse(src["url"]).netloc,
-                            snippet=snippet or text))
+                            posted=_generic_date(snippet or text, today), snippet=snippet or text))
         if len(jobs) >= src.get("max_links", 60):
             break
     return jobs
