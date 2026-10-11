@@ -3,20 +3,22 @@
     "name": "אוניברסיטת חיפה - משרות חיצוניות",
     "type": "generic",
     "max_links": 80,
-    "link_regex": "hr\\.haifa\\.ac\\.il/\\d+-",
+    "link_regex": "hr\\.haifa\\.ac\\.il/\\d{4,6}-",
     "url": "https://hr.haifa.ac.il/%D7%93%D7%A8%D7%95%D7%A9%D7%99%D7%9D/"
   },
   {
-    "name": "מכללת תל-חי - סגל מנהלי (ניסיוני)",
+    "name": "מכללת תל-חי - סגל מנהלי (כבוי: הסקריפט מצא רק קישורי תפריט)",
     "type": "generic",
     "max_links": 40,
-    "url": "https://www.telhai.ac.il/jobs-2"
+    "url": "https://www.telhai.ac.il/jobs-2",
+    "enabled": false
   },
   {
-    "name": "הטכניון - משרות (ניסיוני)",
+    "name": "הטכניון - משרות (כבוי: הסקריפט מצא רק קישורי תפריט)",
     "type": "generic",
     "max_links": 40,
-    "url": "https://hr.technion.ac.il/positions/"
+    "url": "https://hr.technion.ac.il/positions/",
+    "enabled": false
   },
   {
     "name": "Cviljobs - צפון (כבוי: בעיקר משרות טיפוליות וסוציאליות)",
@@ -142,5 +144,41 @@
     "type": "generic",
     "url": "https://example.com/careers",
     "enabled": false
+  },
+  {
+    "name": "דרושים - מפיק/ה, חיפה",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%9E%D7%A4%D7%99%D7%A7%20%D7%97%D7%99%D7%A4%D7%94/"
+  },
+  {
+    "name": "דרושים - וידאו ותוכן, חיפה",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A2%D7%95%D7%A8%D7%9A%20%D7%95%D7%99%D7%93%D7%90%D7%95%20%D7%97%D7%99%D7%A4%D7%94/"
+  },
+  {
+    "name": "דרושים - יוצר/ת תוכן, צפון",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%99%D7%95%D7%A6%D7%A8%20%D7%AA%D7%95%D7%9B%D7%9F%20%D7%A6%D7%A4%D7%95%D7%9F/"
+  },
+  {
+    "name": "דרושים - קריאייטיב ותוכן, חיפה",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A7%D7%A8%D7%99%D7%90%D7%99%D7%99%D7%98%D7%99%D7%91%20%D7%AA%D7%95%D7%9B%D7%9F%20%D7%97%D7%99%D7%A4%D7%94/"
   }
 ]
