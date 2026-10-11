@@ -178,22 +178,51 @@ def parse_taasiya(src):
     return jobs
 
 
+GENERIC_LABELS = {"פרטי המשרה", "לפרטים", "לפרטים נוספים", "קרא עוד", "קראי עוד", "קרא/י עוד",
+                  "להגשת מועמדות", "הגשת מועמדות", "read more", "details", "apply", "more"}
+
+
+def _card_text(a, same_pat):
+    """לכפתורים כמו 'פרטי המשרה': מחזיר את טקסט הכרטיס שמסביב (כותרת, חברה, מיקום)."""
+    best, card = "", a
+    for _ in range(6):
+        card = card.parent
+        if card is None:
+            break
+        hrefs = {x["href"] for x in card.find_all("a", href=True) if same_pat(x["href"])}
+        if len(hrefs) > 1:
+            break
+        t = card.get_text(" ", strip=True)
+        if len(t) >= 25:
+            best = t
+    return best
+
+
 def parse_generic(src):
     """דף קריירה/לוח משרות כללי: אוסף קישורים והמודל מחליט מה משרה."""
     soup = soup_of(src["url"])
     must = src.get("link_must_contain", [])
+    rx = src.get("link_regex")
+
+    def same_pat(h):
+        return (not must or any(k in h for k in must)) and (not rx or re.search(rx, h))
     jobs, seen_urls = [], set()
     for a in soup.find_all("a", href=True):
         text = a.get_text(" ", strip=True)
         href = urljoin(src["url"], a["href"])
-        if not (6 <= len(text) <= 160) or href.startswith(("mailto:", "tel:")):
+        if href.startswith(("mailto:", "tel:")) or not same_pat(href):
             continue
-        if must and not any(k in href for k in must):
+        snippet = ""
+        if text.lower() in GENERIC_LABELS:
+            snippet = _card_text(a, same_pat)
+            text = snippet[:120] if snippet else text
+        if not (6 <= len(text) <= 160):
             continue
         if href in seen_urls or href.rstrip("/") == src["url"].rstrip("/"):
             continue
         seen_urls.add(href)
-        jobs.append(new_job(src["name"], text, href, company=urlparse(src["url"]).netloc))
+        jobs.append(new_job(src["name"], text, href, company=urlparse(src["url"]).netloc,
+                            snippet=snippet or text))
         if len(jobs) >= src.get("max_links", 60):
             break
     return jobs
@@ -465,6 +494,8 @@ def triage(batch):
 
 להלן משרות. החלט לגבי כל אחת אם יש סיכוי סביר שהיא מתאימה, והשאר כל משרה שיש לגביה ספק.
 פסול רק משרות שברור שאינן מתאימות (תחום או תפקיד שונה לגמרי, תפקיד שנפסל בפרופיל, או קישור שאינו משרה).
+חשוב: אל תפסול משרה בגלל מידע חסר (מיקום לא ידוע, חסר תיאור, כותרת כללית). מידע חסר יושלם בשלב הבא, ולכן משרה כזו נשארת.
+לגבי מיקום: פסול רק אם המיקום ידוע ברור שהוא רחוק (למשל באר שבע, רחובות, כפר סבא), ולא אם הוא לא צוין.
 החזר JSON בלבד: {{"keep": [מזהים], "drop": [{{"id": מזהה, "reason": "סיבה קצרה מאוד"}}]}}
 
 {json.dumps(items, ensure_ascii=False)}"""
