@@ -418,13 +418,35 @@ def gemini_text(prompt, grounded=False):
     return "".join(p.get("text", "") for p in parts)
 
 
-def gemini_json(prompt):
-    body = {"contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2}}
-    data = _call(body)
-    text = data["candidates"][0]["content"]["parts"][0]["text"]
-    text = re.sub(r"^```(?:json)?|```$", "", text.strip()).strip()
-    return json.loads(text)
+def gemini_json(prompt, schema=None):
+    """מבקש JSON תקין. עם סכמה Gemini מחויב למבנה, מה שמונע שבירות כמו גרשיים בטקסט עברי."""
+    def attempt(use_schema):
+        cfg = {"responseMimeType": "application/json", "temperature": 0.1}
+        if use_schema and schema:
+            cfg["responseSchema"] = schema
+        data = _call({"contents": [{"parts": [{"text": prompt}]}], "generationConfig": cfg})
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        return json.loads(re.sub(r"^```(?:json)?|```$", "", text.strip()).strip())
+    try:
+        return attempt(True)
+    except (json.JSONDecodeError, RuntimeError):
+        return attempt(False)       # ניסיון שני, בלי סכמה (למקרה שהמודל לא תומך בה)
+
+
+TRIAGE_SCHEMA = {"type": "OBJECT", "properties": {
+    "keep": {"type": "ARRAY", "items": {"type": "INTEGER"}},
+    "drop": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+        "id": {"type": "INTEGER"}, "reason": {"type": "STRING"}}, "required": ["id", "reason"]}}},
+    "required": ["keep", "drop"]}
+
+SCORE_SCHEMA = {"type": "OBJECT", "properties": {"results": {"type": "ARRAY", "items": {
+    "type": "OBJECT", "properties": {
+        "id": {"type": "INTEGER"}, "score": {"type": "INTEGER"},
+        "category": {"type": "STRING", "enum": ["clear", "partial", "remote", "exclude"]},
+        "why": {"type": "STRING"}, "missing": {"type": "STRING"}, "cv_tip": {"type": "STRING"},
+        "distance_minutes": {"type": "INTEGER", "nullable": True},
+        "work_mode": {"type": "STRING"}, "salary": {"type": "STRING"}, "reason": {"type": "STRING"}},
+    "required": ["id", "score", "category"]}}}, "required": ["results"]}
 
 
 def _toint(x):
@@ -446,7 +468,7 @@ def triage(batch):
 החזר JSON בלבד: {{"keep": [מזהים], "drop": [{{"id": מזהה, "reason": "סיבה קצרה מאוד"}}]}}
 
 {json.dumps(items, ensure_ascii=False)}"""
-    out = gemini_json(prompt)
+    out = gemini_json(prompt, TRIAGE_SCHEMA)
     if isinstance(out, list):
         out = {"keep": out}
     keep = {k for k in (_toint(x) for x in out.get("keep", [])) if k is not None}
@@ -479,7 +501,7 @@ def score(batch):
 }}]}}
 
 {json.dumps(items, ensure_ascii=False)}"""
-    return {r["id"]: r for r in gemini_json(prompt).get("results", []) if "id" in r}
+    return {r["id"]: r for r in gemini_json(prompt, SCORE_SCHEMA).get("results", []) if "id" in r}
 
 
 # ---------------------------------------------------------------- state
@@ -632,17 +654,21 @@ def main():
                 new.append(lst.pop(0))
     print(f"{len(new)} משרות חדשות לבדיקה")
 
-    rows, notes, rejected = [], [], []
+    rows, notes, rejected, errs = [], [], [], []
     keep_all, triaged, scored = [], [], set()
     try:
         if new:
             pick_model()
-        for i in range(0, len(new), 40):
+        for i in range(0, len(new), 25):
             if out_of_time():
                 notes.append("הזמן המוקצה להרצה נגמר באמצע הסינון. השאר ימשיך מחר.")
                 break
-            batch = new[i:i + 40]
-            ids, reasons = triage(batch)
+            batch = new[i:i + 25]
+            try:
+                ids, reasons = triage(batch)
+            except Exception as e:  # noqa: BLE001  קבוצה שנכשלה לא מפילה את כל הריצה
+                errs.append(clean(e)[:160])
+                continue
             if not ids and not reasons:
                 notes.append("הסינון הראשוני לא החזיר תשובה תקינה, ולכן כל המשרות הועברו לדירוג.")
                 ids = set(range(len(batch)))
@@ -663,7 +689,11 @@ def main():
                 notes.append("הזמן המוקצה להרצה נגמר באמצע הדירוג. השאר ימשיך מחר.")
                 break
             batch = keep[i:i + 6]
-            res = score(batch)
+            try:
+                res = score(batch)
+            except Exception as e:  # noqa: BLE001
+                errs.append(clean(e)[:160])
+                continue
             for k, j in enumerate(batch):
                 scored.add(j["url"])
                 r = res.get(k)
@@ -681,6 +711,8 @@ def main():
         for j in triaged:
             if j["url"] not in skip:
                 seen[h(j["url"])] = today.isoformat()
+        if errs:
+            notes.append(f"{len(errs)} קבוצות משרות נכשלו בעיבוד ויבדקו שוב בריצה הבאה. שגיאה לדוגמה: {errs[0]}")
     except Exception as e:  # noqa: BLE001
         notes.append(f"שגיאה בשלב הסינון החכם: {clean(e)}. המשרות לא סומנו כנבדקו ויסרקו שוב.")
 
