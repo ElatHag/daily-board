@@ -71,6 +71,31 @@ try{const s=localStorage.getItem("pw");if(s){go(s,true)}}catch(e){}
 """
 
 
+
+def _derive(password, salt, iterations):
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    return PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt,
+                      iterations=iterations).derive(password.encode("utf-8"))
+
+
+def encrypt_blob(obj, password):
+    """מצפין מבנה נתונים (למשל רשימת ההתאמות האחרונות), כדי שאפשר יהיה לשמור אותו במאגר ציבורי."""
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    salt, iv = os.urandom(16), os.urandom(12)
+    ct = AESGCM(_derive(password, salt, ITERATIONS)).encrypt(
+        iv, json.dumps(obj, ensure_ascii=False).encode("utf-8"), None)
+    return {"s": base64.b64encode(salt).decode(), "v": base64.b64encode(iv).decode(),
+            "c": base64.b64encode(ct).decode(), "i": ITERATIONS}
+
+
+def decrypt_blob(blob, password):
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    key = _derive(password, base64.b64decode(blob["s"]), blob["i"])
+    pt = AESGCM(key).decrypt(base64.b64decode(blob["v"]), base64.b64decode(blob["c"]), None)
+    return json.loads(pt.decode("utf-8"))
+
+
 def _score_class(score):
     try:
         s = float(score)
@@ -91,6 +116,11 @@ def _card(j, r):
         chips.append("🏠 " + E(r["work_mode"]))
     if r.get("salary"):
         chips.append("💰 " + E(r["salary"]))
+    if j.get("new"):
+        chips.append("🆕 חדש היום")
+    elif j.get("first_seen"):
+        d = j["first_seen"]
+        chips.append(f"נמצאה ב-{d[8:10]}.{d[5:7]}")
     if j.get("unverified"):
         chips.append("❓ לא אומתה כפתוחה")
     chip_html = "".join(f"<span>{c}</span>" for c in chips)
