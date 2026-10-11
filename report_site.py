@@ -116,7 +116,7 @@ def fragment(rows, health, notes, stats=None, rejected=None):
     rej_html = ""
     if rejected:
         items = "".join(
-            f"<li>{E(x['title'])} <small>({E(x['source'])}"
+            f"<li>{('<a href=' + chr(34) + E(x['url']) + chr(34) + ' target=_blank rel=noopener>' + E(x['title']) + '</a>') if x.get('url') else E(x['title'])} <small>({E(x['source'])}"
             f"{', ' + str(x['score']) + '/10' if x.get('score') is not None else ''}) &mdash; {E(x['reason'])}</small></li>"
             for x in rejected)
         rej_html = f"<details><summary>משרות שנפסלו ({len(rejected)})</summary><ul>{items}</ul></details>"
