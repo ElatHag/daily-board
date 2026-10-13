@@ -116,6 +116,8 @@ def _card(j, r):
         chips.append("🏠 " + E(r["work_mode"]))
     if r.get("salary"):
         chips.append("💰 " + E(r["salary"]))
+    if j.get("partial"):
+        chips.append("⚠️ מידע חלקי: כדאי לפתוח את המשרה")
     if j.get("new"):
         chips.append("🆕 חדש היום")
     elif j.get("first_seen"):
