@@ -529,11 +529,14 @@ def triage(batch):
 
 def score(batch):
     items = [{"id": i, "title": j["title"], "company": j["company"], "location": j["location"],
-              "source": j["source"], "text": j["detail"]} for i, j in enumerate(batch)]
+              "source": j["source"], "text": j["detail"],
+              "text_is_partial": bool(j.get("partial"))} for i, j in enumerate(batch)]
     prompt = f"""{PROFILE}
 
 הערך כל משרה מול הפרופיל. אל תסתמך על מילות מפתח בלבד - הבן את מהות התפקיד
 והחלט אם הוא באמת מתאים, גם אם לא כתוב במפורש. אל תמציא פרטים שלא מופיעים בטקסט.
+אם text_is_partial הוא true, המידע חלקי (הדף המלא לא נקרא): אל תנחש את אופי החברה, סוג העבודה,
+המיקום המדויק או הדרישות. כתוב ב-why שהמידע חלקי, ואל תיתן ציון מעל 5.
 החזר JSON בלבד:
 {{"results": [{{
  "id": מספר,
@@ -750,6 +753,8 @@ def main():
         overflow = {j["url"] for j in keep_all[MAX_DETAIL:]}   # מבטיחות שלא הספקנו, ייבדקו מחר
         for j in keep:
             j["detail"] = fetch_detail(j)
+            words = re.findall(r"\w{3,}", j["title"])[:3]
+            j["partial"] = len(j["detail"]) < 400 or not any(w in j["detail"] for w in words)
         for i in range(0, len(keep), 6):
             if out_of_time():
                 notes.append("הזמן המוקצה להרצה נגמר באמצע הדירוג. השאר ימשיך מחר.")
