@@ -491,7 +491,8 @@ SCORE_SCHEMA = {"type": "OBJECT", "properties": {"results": {"type": "ARRAY", "i
         "category": {"type": "STRING", "enum": ["clear", "partial", "remote", "exclude"]},
         "why": {"type": "STRING"}, "missing": {"type": "STRING"}, "cv_tip": {"type": "STRING"},
         "distance_minutes": {"type": "INTEGER", "nullable": True},
-        "work_mode": {"type": "STRING"}, "salary": {"type": "STRING"}, "reason": {"type": "STRING"}},
+        "work_mode": {"type": "STRING"}, "salary": {"type": "STRING"}, "reason": {"type": "STRING"},
+        "clean_title": {"type": "STRING"}},
     "required": ["id", "score", "category"]}}}, "required": ["results"]}
 
 
@@ -535,6 +536,8 @@ def score(batch):
 
 הערך כל משרה מול הפרופיל. אל תסתמך על מילות מפתח בלבד - הבן את מהות התפקיד
 והחלט אם הוא באמת מתאים, גם אם לא כתוב במפורש. אל תמציא פרטים שלא מופיעים בטקסט.
+אם חלק מהותי מהתפקיד הוא תחום או תפקיד שנפסל בפרופיל (למשל הפקת אירועים), תני ציון 3 לכל היותר
+וצייני זאת ב-missing, גם אם שאר התפקיד מתאים.
 אם text_is_partial הוא true, המידע חלקי (הדף המלא לא נקרא): אל תנחש את אופי החברה, סוג העבודה,
 המיקום המדויק או הדרישות. כתוב ב-why שהמידע חלקי, ואל תיתן ציון מעל 5.
 החזר JSON בלבד:
@@ -548,7 +551,8 @@ def score(batch):
  "distance_minutes": הערכת זמן נסיעה מבוסתן הגליל במספר או null,
  "work_mode": "פיזי/היברידי/מרחוק/לא ידוע",
  "salary": "אם צוין, אחרת ריק",
- "reason": "אם exclude או ציון נמוך: סיבה קצרה מאוד"
+ "reason": "אם exclude או ציון נמוך: סיבה קצרה מאוד",
+ "clean_title": "כותרת קצרה ונקייה של המשרה בלבד (בלי שם המפרסם, ניסיון נדרש, היקף משרה, תאריכים או טקסט מיותר)"
 }}]}}
 
 {json.dumps(items, ensure_ascii=False)}"""
@@ -571,12 +575,19 @@ def _matches_path():
     return ROOT / ("matches.enc" if REPORT_PASSWORD else "matches.json")
 
 
+_matches_unreadable = {"v": False}
+
+
 def load_matches():
+    path = _matches_path()
+    if not path.exists():
+        return []
     try:
-        raw = json.loads(_matches_path().read_text(encoding="utf-8"))
+        raw = json.loads(path.read_text(encoding="utf-8"))
         data = report_site.decrypt_blob(raw, REPORT_PASSWORD) if REPORT_PASSWORD else raw
         return data if isinstance(data, list) else []
     except Exception:  # noqa: BLE001
+        _matches_unreadable["v"] = True    # קיים קובץ אבל אי אפשר לקרוא אותו (למשל הסיסמה הוחלפה)
         return []
 
 
@@ -769,6 +780,9 @@ def main():
                 scored.add(j["url"])
                 r = res.get(k)
                 if r and r.get("category") != "exclude" and r.get("score", 0) >= MIN_SCORE:
+                    ct = str(r.get("clean_title") or "").strip()
+                    if 4 <= len(ct) <= 120:
+                        j["title"] = ct
                     rows.append((j, r))
                 else:
                     rejected.append({"title": j["title"], "url": j["url"], "source": j["source"],
@@ -794,6 +808,8 @@ def main():
     today_s = today.isoformat()
     cutoff = (today - timedelta(days=MATCHES_DAYS)).isoformat()
     kept = {m["job"]["url"]: m for m in load_matches() if m.get("first_seen", "") >= cutoff}
+    if _matches_unreadable["v"]:
+        notes.append("לא הצלחתי לקרוא את רשימת ההתאמות השמורה (אולי הסיסמה הוחלפה), ולכן נפתחה רשימה חדשה.")
     for j, r in rows:
         jj = {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in j.items() if k != "detail"}
         kept[j["url"]] = {"job": jj, "r": r, "first_seen": today_s}
@@ -810,8 +826,9 @@ def main():
         return (r["category"] == "remote", -r.get("score", 0), r.get("distance_minutes") or 999)
     rows = sorted(rows, key=key)[:MAX_IN_REPORT]
 
-    stats = [("נאספו", len(candidates)), ("חדשות", len(new)), ("עברו סינון ראשוני", len(keep_all)),
-             ("דורגו", len(scored)), ("בדוח", len(rows))]
+    carried = sum(1 for j, _ in rows if not j.get("new"))
+    stats = [("נאספו היום", len(candidates)), ("חדשות היום", len(new)), ("עברו סינון ראשוני", len(keep_all)),
+             ("דורגו", len(scored)), ("בדוח", len(rows)), ("מהם מימים קודמים", carried)]
     if REPORT_PASSWORD:      # מצב אתר: דף מוצפן בלבד, בלי קבצי Markdown גלויים
         report_site.write_site(rows, health, notes, ROOT / "docs", REPORT_PASSWORD, stats, rejected[:80])
     else:
