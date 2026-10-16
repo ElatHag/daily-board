@@ -117,13 +117,86 @@
     "enabled": false
   },
   {
-    "name": "דרושים (Drushim) - סושיאל, חיפה והצפון",
+    "name": "דרושים (Drushim) - סושיאל, חיפה והצפון (כבוי: הוחלף בחיפושים מסוננים לפי אזור)",
     "type": "generic",
     "max_links": 60,
     "link_must_contain": [
       "/job/"
     ],
-    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%A9%D7%99%D7%90%D7%9C/"
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%A9%D7%99%D7%90%D7%9C/",
+    "enabled": false
+  },
+  {
+    "name": "דרושים - סושיאל, חיפה והקריות (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%A9%D7%99%D7%90%D7%9C/?area=%D7%97%D7%99%D7%A4%D7%94%20%D7%95%D7%94%D7%A7%D7%A8%D7%99%D7%95%D7%AA&geoLexId=540297&radius=30"
+  },
+  {
+    "name": "דרושים - וידאו, חיפה והקריות (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%95%D7%99%D7%93%D7%90%D7%95/?area=%D7%97%D7%99%D7%A4%D7%94%20%D7%95%D7%94%D7%A7%D7%A8%D7%99%D7%95%D7%AA&geoLexId=540297&radius=30"
+  },
+  {
+    "name": "דרושים - קריאייטיב, חיפה והקריות (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A7%D7%A8%D7%99%D7%90%D7%99%D7%99%D7%98%D7%99%D7%91/?area=%D7%97%D7%99%D7%A4%D7%94%20%D7%95%D7%94%D7%A7%D7%A8%D7%99%D7%95%D7%AA&geoLexId=540297&radius=30"
+  },
+  {
+    "name": "דרושים - קריאייטיב, כרמיאל (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A7%D7%A8%D7%99%D7%90%D7%99%D7%99%D7%98%D7%99%D7%91/?area=%D7%9B%D7%A8%D7%9E%D7%99%D7%90%D7%9C&geoLexId=539079&radius=30"
+  },
+  {
+    "name": "דרושים - וידאו, כרמיאל (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%95%D7%99%D7%93%D7%90%D7%95/?area=%D7%9B%D7%A8%D7%9E%D7%99%D7%90%D7%9C&geoLexId=539079&radius=30"
+  },
+  {
+    "name": "דרושים - סושיאל, קריית טבעון (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%A9%D7%99%D7%90%D7%9C/?area=%D7%A7%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%91%D7%A2%D7%95%D7%9F&geoLexId=540163&radius=30"
+  },
+  {
+    "name": "דרושים - וידאו, קריית טבעון (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%95%D7%99%D7%93%D7%90%D7%95/?area=%D7%A7%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%91%D7%A2%D7%95%D7%9F&geoLexId=540163&radius=30"
+  },
+  {
+    "name": "דרושים - קריאייטיב, קריית טבעון (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A7%D7%A8%D7%99%D7%90%D7%99%D7%99%D7%98%D7%99%D7%91/?area=%D7%A7%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%91%D7%A2%D7%95%D7%9F&geoLexId=540163&radius=30"
   },
   {
     "name": "Nortech (חוסם גישה אוטומטית - כבוי)",
