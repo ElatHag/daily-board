@@ -235,6 +235,24 @@
     "url": "https://www.drushim.co.il/jobs/search/%D7%A2%D7%A8%D7%99%D7%9B%D7%94/?area=%D7%97%D7%99%D7%A4%D7%94%20%D7%95%D7%94%D7%A7%D7%A8%D7%99%D7%95%D7%AA&geoLexId=540297&radius=30"
   },
   {
+    "name": "דרושים - משרד פרסום, חיפה והקריות (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%A4%D7%A8%D7%A1%D7%95%D7%9D/?area=%D7%97%D7%99%D7%A4%D7%94%20%D7%95%D7%94%D7%A7%D7%A8%D7%99%D7%95%D7%AA&geoLexId=540297&radius=30"
+  },
+  {
+    "name": "דרושים - סוכנות דיגיטל, חיפה והקריות (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%9B%D7%A0%D7%95%D7%AA%20%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C/?area=%D7%97%D7%99%D7%A4%D7%94%20%D7%95%D7%94%D7%A7%D7%A8%D7%99%D7%95%D7%AA&geoLexId=540297&radius=30"
+  },
+  {
     "name": "דרושים - מפיק, כרמיאל (30 ק\"מ)",
     "type": "generic",
     "max_links": 40,
@@ -262,6 +280,24 @@
     "url": "https://www.drushim.co.il/jobs/search/%D7%A2%D7%A8%D7%99%D7%9B%D7%94/?area=%D7%9B%D7%A8%D7%9E%D7%99%D7%90%D7%9C&geoLexId=539079&radius=30"
   },
   {
+    "name": "דרושים - משרד פרסום, כרמיאל (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%A4%D7%A8%D7%A1%D7%95%D7%9D/?area=%D7%9B%D7%A8%D7%9E%D7%99%D7%90%D7%9C&geoLexId=539079&radius=30"
+  },
+  {
+    "name": "דרושים - סוכנות דיגיטל, כרמיאל (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%9B%D7%A0%D7%95%D7%AA%20%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C/?area=%D7%9B%D7%A8%D7%9E%D7%99%D7%90%D7%9C&geoLexId=539079&radius=30"
+  },
+  {
     "name": "דרושים - מפיק, קריית טבעון (30 ק\"מ)",
     "type": "generic",
     "max_links": 40,
@@ -287,6 +323,24 @@
       "/job/"
     ],
     "url": "https://www.drushim.co.il/jobs/search/%D7%A2%D7%A8%D7%99%D7%9B%D7%94/?area=%D7%A7%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%91%D7%A2%D7%95%D7%9F&geoLexId=540163&radius=30"
+  },
+  {
+    "name": "דרושים - משרד פרסום, קריית טבעון (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%A4%D7%A8%D7%A1%D7%95%D7%9D/?area=%D7%A7%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%91%D7%A2%D7%95%D7%9F&geoLexId=540163&radius=30"
+  },
+  {
+    "name": "דרושים - סוכנות דיגיטל, קריית טבעון (30 ק\"מ)",
+    "type": "generic",
+    "max_links": 40,
+    "link_must_contain": [
+      "/job/"
+    ],
+    "url": "https://www.drushim.co.il/jobs/search/%D7%A1%D7%95%D7%9B%D7%A0%D7%95%D7%AA%20%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C/?area=%D7%A7%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%91%D7%A2%D7%95%D7%9F&geoLexId=540163&radius=30"
   },
   {
     "name": "Nortech (חוסם גישה אוטומטית - כבוי)",
